@@ -1,7 +1,7 @@
 from scapy.all import *
 import optparse
 import re
-conf.iface = "wlan0"
+
 def findGuest(pkt):
     raw = pkt.sprintf("%Raw.load%")
     name = re.findall("(?i)LAST_NAME=(.*)&'",raw)
