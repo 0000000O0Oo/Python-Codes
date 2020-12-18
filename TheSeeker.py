@@ -1,27 +1,50 @@
-import urllib2
+import urllib.request
+import urllib.parse
+import urllib.error
 import optparse
+from urllib.parse import urlsplit
+import os
 from PIL import Image
 from PIL.ExifTags import TAGS
 from bs4 import BeautifulSoup
-from urlparse import urlsplit
 from os.path import basename
 
-def downloadImage(imgTag):
+def pBanner():
+    os.system("clear")
+    print("""
+        ⣼⡟⠋⣀⣼⣾⣶⣶⣦⣤⣤⣴⣶⣶⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣶⣤⡘⢹⠄
+        ⡟⠄⢰⣿⣿⣿⣿⣿⣿⣿⠈⠈⣿⣿⣿⣿⡋⠉⣻⣿⣿⣿⣿⣿⣿⣿⡄⠘⣇
+        ⠁⠄⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⢵⣽⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣧⠄⢹
+        ⠄⢀⣾⣿⣿⣿⣿⣿⣿⣿⡿⠋⣿⣿⣿⣿⣿⠉⠻⠿⣿⣿⣿⣿⣿⣿⣿⣇⠄
+        ⠄⢰⣿⣿⡿⠿⠟⠋⠉⠄⠄⠈⣿⣿⣿⣿⡏⢀⣤⣤⣄⣀⣀⣀⡈⠉⢻⣿⠄
+        ⡄⢸⣯⣥⡴⠒⢊⡁ ⭕ ⢸⣿⣿⣿⣿⣦⠈⠁ ⭕ ⣆⠈⣁⣈⣿⣿⡴
+        ⣿⢸⣿⣿⣿⣿⣶⣶⣿⣶⣡⣼⣿⣿⣿⣿⣿⢿⣆⣤⣾⣬⣭⣵⣶⣿⣿⣿⣿
+        ⠄⢻⡟⣩⣾⣿⣿⣿⠏⠿⡿⢿⡿⠿⠯⠎⠉⠙⠻⣿⣿⣿⡿⢖⣀⣀⠄⣼⠄
+        ⢀⠘⣷⣿⢿⣿⣿⣿⡀⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⢸⣿⠿⠟⠋⠁⣴⣿⠏⠄
+        ⠄⠄⠘⣿⣷⣌⠙⠻⢿⣷⣶⣤⣤⣤⣀⣠⡤⠞⡋⡍⠄⠂⠄⠄⣼⣿⠃⠄⠄
+        ⠄⠄⠄⠄⢸⣿⣦⠄⠘⣿⡁⣾⣹⡍⣁⠐⡆⡇⠁⡌⠄⠄⠄⣰⣿⠇⠄⠄⠄
+        ⠄⠄⠄⠄⠄⢹⣿⣷⡘⢻⣧⣇⡟⢿⢿⠄⢷⢸⡧⠁⠄⠄⢰⣿⣿⠏⠄⠄⠄
+        ⠄⠄⠄⠄⠄⠈⣿⣿⣷⡹⢹⠸⢣⢈⠘⡇⠘⠈⠄⠁⠄⠄⣼⣿⣿⠃⣰⠄⠄
+        ⠄⠄⠄⠄⠄⣷⠘⣿⣿⣷⡀⠄⠸⢿⣿⡏⣾⠓⠃⠄⠄⢀⡟⣿⠏⣰⣿⣷⠄
+        ⠄⠄⣠⣿⣿⣿⣷⠙⣿⣿⣷⡀⠄⠈⠄⠄⠄⠄⠄⠄⣠⡞⣼⡿⢀⣿⣿⣿⣷
+        ⠄⣼⣿⣿⣿⣿⣿⣷⠈⠿⣝⣿⣿⣦⣤⣭⣥⣤⣤⣶⣾⠿⠋⢀⣼⣿⣿ TheSeeker
+        """)
+
+def downloadImage(url,tag):
     try:
         print("[+] Downloading images...")
-        imgSrc = imgTag['src']
-        imgContent = urllib2.urlopen(imgSrc).read()
+        imgSrc = tag['src']
+        imgContent = urllib.request.urlopen(imgSrc).read()
         imgFileName = basename(urlsplit(imgSrc)[2])
-        imgFile = open(imgFileNamem 'wb')
-        imgFile.write(imgContent)
-        imgFile.close()
+        with open(imgFileName, 'wb') as file:
+            imgFile.write(imgContent)
         return imgFileName
-    except:
+    except OSError:
         return ''
 
 def getURL():
     parser = optparse.OptionParser()
-    parser.add_option("-u", "--url", dest="url", help="Enter the url of the website you wish to download and parse image data")
+    parser.add_option("-u", "--url", dest="url", type="string", help="Enter the url of the website you wish to download and parse image data")
     (options, args) = parser.parse_args()
     if not options.url:
         parser.error("Please enter an url using -u or --url !")
@@ -31,15 +54,16 @@ def getURL():
 
 def findImages(url):
     print("[+] Finding images on : " + url)
-    urlContent = urllib2.urlopen(url).read()
-    soup = BeautifulSoup(urlContent)
+    urlContent = urllib.request.urlopen(url).read()
+    soup = BeautifulSoup(urlContent, features="html.parser")
     imgTags = soup.findAll('img')
     return imgTags
 
-def textForExif(imgFileName):
+def testForExif(imgFileName):
     try:
         exifData = {}
         imgFile = Image.open(imgFileName)
+        print("GetExif()")
         info = imgFile._getexif()
         if info:
             for(tag, value) in info.items():
@@ -48,11 +72,16 @@ def textForExif(imgFileName):
             exifGPS = exifData['GPSInfo']
             if exifGPS:
                 print("[*] " + imgFileName + ' contains GPS MetaData')
+            else:
+                print("[-] No MetaData found for these images")
     except:
         pass
 
+pBanner()
 url = getURL()
+print("[+] URL Obtained")
 imgTags = findImages(url)
+print("[+] Images Obtained")
 for imgTag in imgTags:
-    imgFileName = downloadImage(imgTag)
-    testForExif(imageFileName)
+    imgFileName = downloadImage(url,imgTag)
+    testForExif(imgFileName)
