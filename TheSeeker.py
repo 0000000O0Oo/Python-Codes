@@ -1,3 +1,4 @@
+#still need to implement some algorithms, does not works on every website for the moment
 import urllib.request
 import urllib.parse
 import urllib.error
