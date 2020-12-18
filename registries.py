@@ -3,7 +3,7 @@ from _winreg import *
 def val2addr(val):
 	addr = ''
 	for ch in val:
-        addr += '%02x '% ord(ch)
+        addr += '%02x ' % ord(ch)
     addr = addr.strip(' ').replace(' ', ':')[0:17]
     return addr
 
