@@ -1,6 +1,5 @@
 from scapy.all import *
-import optparse
-import re
+import optparse, re, os
 
 def findGuest(pkt):
     raw = pkt.sprintf("%Raw.load%")
@@ -20,6 +19,7 @@ def getOptions():
         return options.interface
 
 try:
+    os.system("clear")
     conf.iface = getOptions()
     print("[*] Starting Hotel Guest Sniffer.")
     sniff(filter="tcp", prn=findGuest, store=0)
